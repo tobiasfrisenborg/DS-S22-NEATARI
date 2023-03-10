@@ -1,0 +1,44 @@
+---
+title: "NEATARI Visualizations"
+author: "Tobias Frisenborg Christensen (201806880)"
+output: html_notebook
+---
+
+```{r}
+
+library(pacman)
+
+pacman::p_load(tidyverse)
+
+project_path <- "C:\\Users\\tobia\\Documents\\dev\\DS\\exam\\neat-python"
+run_id <- "eb4bbe1c-fe6e-4138-b79e-658a03077096"
+fitness_scores_path <- paste(project_path, "logs", run_id, "fitness_scores.csv", sep="\\")
+
+fitness_scores <- read.csv(fitness_scores_path)
+fitness_scores[is.na(fitness_scores)] <- 0  # Replace NA's
+fitness_scores$mean <- rowMeans(fitness_scores)
+fitness_scores$max <- apply(fitness_scores, 1, max)
+fitness_scores$gen <- seq(1, length(fitness_scores$max))
+
+
+
+
+fitness_scores %>%
+  
+  ggplot(aes(x=gen, y=max)) +
+  #geom_line(size=.7, alpha=.8, color="#003d73") +
+  geom_smooth(size=1, alpha=.3, color="#002546", method=loess, se=FALSE) + 
+  
+  theme_minimal() +
+  theme(
+    panel.grid.minor = element_blank(),
+    panel.grid.major.x = element_blank(),
+    #panel.grid.major = element_blank()
+    ) +
+  labs(
+    x = "Generation", y = "Max Fitness"
+  )
+
+ggsave("plots\\max_fitness.png", width=6, height=4)
+
+```
